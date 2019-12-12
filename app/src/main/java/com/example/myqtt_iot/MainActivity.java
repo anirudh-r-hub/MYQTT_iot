@@ -1,7 +1,11 @@
 package com.example.myqtt_iot;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +22,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
-    private Button ON,OFF,LDR;
+    private Button LED1,LED2,LDR;
     private String payload_value="1024";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +30,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        //ActionBar bar=getActionBar();
+        //bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#004D40")));
 
 
 
+        LED1=(Button) findViewById(R.id.LED1);
+        LED1.setBackgroundColor(Color.BLUE);
 
-        ON=(Button) findViewById(R.id.ON1);
-
-        OFF=(Button) findViewById(R.id.OFF1);
 
         LDR=(Button) findViewById(R.id.LDR);
+        LDR.setBackgroundColor(Color.BLUE);
 
+        LED2=(Button) findViewById(R.id.LED2);
+        LED2.setBackgroundColor(Color.BLUE);
         //################################################################
 
         String clientId = MqttClient.generateClientId();
-        ON=(Button)findViewById(R.id.ON1);
-        OFF=(Button) findViewById(R.id.OFF1);
-        LDR=(Button) findViewById(R.id.LDR);
         final MqttAndroidClient client =
                 new MqttAndroidClient(MainActivity.this , "tcp://tailor.cloudmqtt.com:13968",
                         clientId);
@@ -76,64 +81,121 @@ public class MainActivity extends AppCompatActivity {
         }
         //######################################################################
 
-                ON.setOnClickListener(new View.OnClickListener() {
+                LED1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String topic = "mobile";
-                payload_value="0";
+                LDR.setText("ON LDR");
+                LDR.setBackgroundColor(Color.BLUE);
+                String topic = "led1";
+                if(LED1.getText().toString().equals("ON LED1")) {
+                    payload_value = "0";
+                    LED1.setBackgroundColor(Color.CYAN);
+                    LED1.setText("OFF LED1");
+                }
+                else
+                {
+                    payload_value = "1024";
+                    LED1.setBackgroundColor(Color.BLUE);
+                    LED1.setText("ON LED1");
+
+                }
+
                 byte[] encodedPayload = new byte[0];
                 try {
-                    Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
 
                     encodedPayload = payload_value.getBytes("UTF-8");
-                    MqttMessage message = new MqttMessage(encodedPayload);
-                    client.publish(topic, message);
+                    MqttMessage message1 = new MqttMessage(encodedPayload);
+                    MqttMessage message2=new MqttMessage("OFF".getBytes());
+                    client.publish("ldr",message2);
+                    client.publish(topic, message1);
 
-                    payload_value = "OFF";
-                    encodedPayload = payload_value.getBytes("UTF-8");
-                    message = new MqttMessage(encodedPayload);
-                    client.publish("ldr", message);
+
                 } catch (UnsupportedEncodingException | MqttException e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        OFF.setOnClickListener(new View.OnClickListener() {
+    //##################################################################################################
+        LED2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String topic = "mobile";
-                payload_value="1024";
+                String topic = "led2";
+                if(LED2.getText().toString().equals("ON LED2")) {
+                    payload_value = "0";
+                    LED2.setBackgroundColor(Color.CYAN);
+                    LED2.setText("OFF LED2");
+                }
+                else
+                {
+                    payload_value = "1024";
+                    LED2.setBackgroundColor(Color.BLUE);
+                    LED2.setText("ON LED2");
+
+                }
+
                 byte[] encodedPayload = new byte[0];
                 try {
-                    Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
 
                     encodedPayload = payload_value.getBytes("UTF-8");
-                    MqttMessage message = new MqttMessage(encodedPayload);
-                    client.publish(topic, message);
+                    MqttMessage message1 = new MqttMessage(encodedPayload);
+                    MqttMessage message2=new MqttMessage("OFF".getBytes());
+                    client.publish("ldr",message2);
+                    client.publish(topic, message1);
+
+
                 } catch (UnsupportedEncodingException | MqttException e) {
                     e.printStackTrace();
                 }
             }
         });
-
-        LDR.setOnClickListener(new View.OnClickListener() {
+//#######################################################################################################
+                LDR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String topic = "ldr";
                 payload_value="ON";
+                String button_text=LDR.getText().toString();
+                if(button_text.equals("OFF LDR"))
+                {
+                    payload_value="OFF";
+                    LDR.setText("ON LDR");
+                    LED1.setText("ON LED1");
+                    LED1.setBackgroundColor(Color.BLUE);
+                    LDR.setBackgroundColor(Color.BLUE);
+
+                }
+                else
+                {
+                    LED1.setText("OFF LED1");
+                    LED1.setBackgroundColor(Color.CYAN);
+
+                    LDR.setText("OFF LDR");
+                    LDR.setBackgroundColor(Color.CYAN);
+                }
+
+
                 byte[] encodedPayload = new byte[0];
                 try {
-                    Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
 
                     encodedPayload = payload_value.getBytes("UTF-8");
                     MqttMessage message = new MqttMessage(encodedPayload);
-                    client.publish(topic, message);
+
+                    //else
+                        client.publish(topic, message);
+                        if(payload_value.equals("OFF"))
+                        {
+                            client.publish("led1",new MqttMessage("1024".getBytes()));
+                        }
                 } catch (UnsupportedEncodingException | MqttException e) {
                     e.printStackTrace();
                 }
             }
         });
+   //################################################################################################
 
        /* button_subscribe.setOnClickListener(new View.OnClickListener() {
             @Override
