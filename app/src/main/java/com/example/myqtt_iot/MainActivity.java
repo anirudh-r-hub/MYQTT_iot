@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
                 }
             });
         } catch (MqttException e) {
@@ -356,50 +356,50 @@ public class MainActivity extends AppCompatActivity {
     {
         command=command.toLowerCase();
 
-        //what is your name
+
 
         if(command.indexOf("led")!=-1)
         {
-            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
             if(command.indexOf("1")!=-1)
             {
-                //speak("My name is Hazel");
+
                 if(command.indexOf("on")!=-1)
                 {
 
                     LED1.performClick();
-                    speak("Turning on the lights l e d one");
+                    speak("Turning on l e d one");
                 }
                 if(command.indexOf("off")!=-1)
                 {
                     LED1.performClick();
-                    speak("Turning off the lights l e d one");
+                    speak("Turning off the l e d one");
                 }
             }
 
 
-            if(command.indexOf("two")!=-1 || command.indexOf("to")!=-1 || command.indexOf("tu")!=-1)
+            if(command.indexOf("colour")!=-1 || command.indexOf("color")!=-1)
             {
 
                 if(command.indexOf("on")!=-1)
                 {
-                    speak("Turning on the lights led2");
+                    speak("Turning on the colour l e d ");
                     LED2.performClick();
                 }
                 if(command.indexOf("off")!=-1)
                 {
-                    speak("Turning off the lights led2");
+                    speak("Turning off the colour l e d ");
                     LED2.performClick();
                 }
             }
 
 
-            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+           // Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
 
         }
        else if(command.indexOf("ldr")!=-1 || command.indexOf("india")!=-1)
         {
-            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
             if(command.indexOf("on")!=-1)
             {
 
@@ -414,9 +414,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-           // Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+
             speak(" sorry,cannot understand");
-            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
         }
     }
 
