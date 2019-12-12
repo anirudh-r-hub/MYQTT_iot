@@ -1,12 +1,10 @@
 package com.example.myqtt_iot;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -32,17 +30,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        ON=(Button) findViewById(R.id.ON);
+        ON=(Button) findViewById(R.id.ON1);
 
-        OFF=(Button) findViewById(R.id.OFF);
+        OFF=(Button) findViewById(R.id.OFF1);
 
         LDR=(Button) findViewById(R.id.LDR);
 
         //################################################################
 
         String clientId = MqttClient.generateClientId();
-        ON=(Button)findViewById(R.id.ON);
-        OFF=(Button) findViewById(R.id.OFF);
+        ON=(Button)findViewById(R.id.ON1);
+        OFF=(Button) findViewById(R.id.OFF1);
         LDR=(Button) findViewById(R.id.LDR);
         final MqttAndroidClient client =
                 new MqttAndroidClient(MainActivity.this , "tcp://tailor.cloudmqtt.com:13968",
@@ -90,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
                     encodedPayload = payload_value.getBytes("UTF-8");
                     MqttMessage message = new MqttMessage(encodedPayload);
                     client.publish(topic, message);
+
+                    payload_value = "OFF";
+                    encodedPayload = payload_value.getBytes("UTF-8");
+                    message = new MqttMessage(encodedPayload);
+                    client.publish("ldr", message);
                 } catch (UnsupportedEncodingException | MqttException e) {
                     e.printStackTrace();
                 }
