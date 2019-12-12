@@ -4,12 +4,21 @@ import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -20,18 +29,33 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private Button LED1,LED2,LDR;
     private String payload_value="1024";
+    private TextToSpeech myTTS;
+    private SpeechRecognizer mySpeechrecognizer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        //ActionBar bar=getActionBar();
-        //bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#004D40")));
+        //#################################################################################
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,1);
+                mySpeechrecognizer.startListening(intent);
+            }
+        });
+        //###################################################################################
 
 
 
@@ -44,7 +68,12 @@ public class MainActivity extends AppCompatActivity {
 
         LED2=(Button) findViewById(R.id.LED2);
         LED2.setBackgroundColor(Color.BLUE);
-        //################################################################
+
+        //#######################################################################################
+        initialise_text_to_speech();
+        initialise_speech_recognizer();
+        // speak("hello");
+        //#######################################################################################
 
         String clientId = MqttClient.generateClientId();
         final MqttAndroidClient client =
@@ -54,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
         options.setUserName("ghleymma");
         options.setPassword("jmvoCCetDGiy".toCharArray());
+        //###########################################################################################
 
         try {
             IMqttToken token = client.connect(options);
@@ -61,19 +91,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
-
-                    // We are connected
-                    // Log.d(TAG, "onSuccess");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
-
-
-                    // Something went wrong e.g. connection timeout or firewall problems
-                    // Log.d(TAG, "onFailure");
-
                 }
             });
         } catch (MqttException e) {
@@ -141,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
 
                     encodedPayload = payload_value.getBytes("UTF-8");
                     MqttMessage message1 = new MqttMessage(encodedPayload);
-                    MqttMessage message2=new MqttMessage("OFF".getBytes());
-                    client.publish("ldr",message2);
+                    /*MqttMessage message2=new MqttMessage("OFF".getBytes());
+                    client.publish("ldr",message2);*/
                     client.publish(topic, message1);
 
 
@@ -184,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
                     encodedPayload = payload_value.getBytes("UTF-8");
                     MqttMessage message = new MqttMessage(encodedPayload);
 
-                    //else
                         client.publish(topic, message);
                         if(payload_value.equals("OFF"))
                         {
@@ -196,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
    //################################################################################################
-
+        //subscribe and callback code
        /* button_subscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,13 +263,164 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
-
     }*/
 
 }
+
+    //#######################################################################################################################
+    private void initialise_text_to_speech()
+    {
+        myTTS=new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(myTTS.getEngines().size()==0)
+                {
+                    Toast.makeText(MainActivity.this,"there is no speech engine",Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                else
+                {
+                    myTTS.setLanguage(Locale.US);
+                    speak("how are you?");
+                }
+            }
+        });
+    }
+
+    private void speak(String message)
+    {
+        if(Build.VERSION.SDK_INT>=21)
+            myTTS.speak(message,TextToSpeech.QUEUE_ADD,null,null);
+
+
+    }
+
+    private void initialise_speech_recognizer()
+    {
+        if(SpeechRecognizer.isRecognitionAvailable(this))
+        {
+            mySpeechrecognizer=SpeechRecognizer.createSpeechRecognizer(this);
+            mySpeechrecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onReadyForSpeech(Bundle params) {
+
+                }
+
+                @Override
+                public void onBeginningOfSpeech() {
+
+                }
+
+                @Override
+                public void onRmsChanged(float rmsdB) {
+
+                }
+
+                @Override
+                public void onBufferReceived(byte[] buffer) {
+
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+
+                }
+
+                @Override
+                public void onError(int error) {
+
+                }
+
+                @Override
+                public void onResults(Bundle results) {
+                    List<String> speech_results=results.getStringArrayList(
+                            SpeechRecognizer.RESULTS_RECOGNITION
+                    );
+                    procesResult(speech_results.get(0));
+
+                }
+
+                @Override
+                public void onPartialResults(Bundle partialResults) {
+
+                }
+
+                @Override
+                public void onEvent(int eventType, Bundle params) {
+
+                }
+            });
+        }
+    }
+    private void procesResult(String command)
+    {
+        command=command.toLowerCase();
+
+        //what is your name
+
+        if(command.indexOf("led")!=-1)
+        {
+            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            if(command.indexOf("1")!=-1)
+            {
+                //speak("My name is Hazel");
+                if(command.indexOf("on")!=-1)
+                {
+
+                    LED1.performClick();
+                    speak("Turning on the lights l e d one");
+                }
+                if(command.indexOf("off")!=-1)
+                {
+                    LED1.performClick();
+                    speak("Turning off the lights l e d one");
+                }
+            }
+
+
+            if(command.indexOf("two")!=-1 || command.indexOf("to")!=-1 || command.indexOf("tu")!=-1)
+            {
+
+                if(command.indexOf("on")!=-1)
+                {
+                    speak("Turning on the lights led2");
+                    LED2.performClick();
+                }
+                if(command.indexOf("off")!=-1)
+                {
+                    speak("Turning off the lights led2");
+                    LED2.performClick();
+                }
+            }
+
+
+            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+
+        }
+       else if(command.indexOf("ldr")!=-1 || command.indexOf("india")!=-1)
+        {
+            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            if(command.indexOf("on")!=-1)
+            {
+
+                LDR.performClick();
+                speak("Turning on the l d r");
+            }
+            if(command.indexOf("off")!=-1)
+            {
+                LED1.performClick();
+                speak("Turning off the l d r");
+            }
+        }
+        else
+        {
+           // Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+            speak(" sorry,cannot understand");
+            Toast.makeText(MainActivity.this,command,Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+
 }
