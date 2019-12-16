@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private Button LED1,LED2,LDR;
+    private Button LED1,LED2,LDR,color_picker;
     private String payload_value="1024";
     private TextToSpeech myTTS;
     private SpeechRecognizer mySpeechrecognizer;
@@ -68,6 +68,19 @@ public class MainActivity extends AppCompatActivity {
 
         LED2=(Button) findViewById(R.id.LED2);
         LED2.setBackgroundColor(Color.BLUE);
+
+        //#####################################################
+        color_picker=(Button) findViewById(R.id.Color_picker);
+
+        color_picker.setBackgroundColor(Color.BLUE);
+        color_picker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,Main2Activity.class);
+                startActivity(intent);
+            }
+        });
+
 
         //#######################################################################################
         initialise_text_to_speech();
@@ -281,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     myTTS.setLanguage(Locale.US);
-                    speak("how are you?");
+                    //speak("how are you?");
                 }
             }
         });
