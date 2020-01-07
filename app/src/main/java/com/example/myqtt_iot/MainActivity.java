@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private Button LED1,LED2,LDR,color_picker;
+    private Button LED1,LED2,LDR,color_picker,FanSpeedPicker;
     private String payload_value="1024";
     private TextToSpeech myTTS;
     private SpeechRecognizer mySpeechrecognizer;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         LED2.setBackgroundColor(Color.BLUE);
 
         //#####################################################
-        color_picker=(Button) findViewById(R.id.Color_picker);
+       /* color_picker=(Button) findViewById(R.id.Color_picker);
 
         color_picker.setBackgroundColor(Color.BLUE);
         color_picker.setOnClickListener(new View.OnClickListener() {
@@ -79,8 +79,18 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(MainActivity.this,Main2Activity.class);
                 startActivity(intent);
             }
-        });
+        });*/
+        //#####################################################
+        FanSpeedPicker=(Button) findViewById(R.id.FanSpeedPicker);
 
+        FanSpeedPicker.setBackgroundColor(Color.BLUE);
+        FanSpeedPicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,Main3Activity.class);
+                startActivity(intent);
+            }
+        });
 
         //#######################################################################################
         initialise_text_to_speech();
@@ -90,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         String clientId = MqttClient.generateClientId();
         final MqttAndroidClient client =
-                new MqttAndroidClient(MainActivity.this , "tcp://tailor.cloudmqtt.com:13968",
+                new MqttAndroidClient(MainActivity.this , "tcp://192.168.0.102:1883",
                         clientId);
         MqttConnectOptions options = new MqttConnectOptions();
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-        options.setUserName("ghleymma");
-        options.setPassword("jmvoCCetDGiy".toCharArray());
+        options.setUserName("pi");
+        options.setPassword("mike".toCharArray());
         //###########################################################################################
 
         try {
@@ -103,16 +113,18 @@ public class MainActivity extends AppCompatActivity {
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    //Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    //Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(),""+e,Toast.LENGTH_LONG).show();
+
         }
         //######################################################################
 
@@ -123,13 +135,13 @@ public class MainActivity extends AppCompatActivity {
                 LDR.setBackgroundColor(Color.BLUE);
                 String topic = "led1";
                 if(LED1.getText().toString().equals("ON LED1")) {
-                    payload_value = "0";
+                    payload_value = "1024";
                     LED1.setBackgroundColor(Color.CYAN);
                     LED1.setText("OFF LED1");
                 }
                 else
                 {
-                    payload_value = "1024";
+                    payload_value = "0";
                     LED1.setBackgroundColor(Color.BLUE);
                     LED1.setText("ON LED1");
 

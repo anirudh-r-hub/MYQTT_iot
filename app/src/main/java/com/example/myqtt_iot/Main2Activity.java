@@ -39,12 +39,12 @@ public class Main2Activity extends AppCompatActivity {
 
         String clientId = MqttClient.generateClientId();
         final MqttAndroidClient client =
-                new MqttAndroidClient(Main2Activity.this , "tcp://tailor.cloudmqtt.com:13968",
-                        clientId);
+                new MqttAndroidClient(Main2Activity.this , "tcp://192.168.0.102:1883",
+                        clientId);  //##################### (connect to server URL)
         MqttConnectOptions options = new MqttConnectOptions();
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-        options.setUserName("ghleymma");
-        options.setPassword("jmvoCCetDGiy".toCharArray());
+        options.setUserName("pi");    //########################### (username)
+        options.setPassword("mike".toCharArray());  //################## (password)
 
         try {
             IMqttToken token = client.connect(options);
@@ -82,14 +82,14 @@ public class Main2Activity extends AppCompatActivity {
                     String hex="#"+Integer.toHexString(pixel);
                     view.setBackgroundColor(Color.rgb(r,g,b));
                     textView.setText("RGB: "+r+", "+g+", "+b+"\nHEX"+hex);
-                    String payload_value=hex;
+                    String payload_value=r+","+g+","+b;
                     byte[] encodedPayload = new byte[0];
                     try {
                         //Toast.makeText(getApplicationContext(),"inside onPublish",Toast.LENGTH_LONG).show();
 
                         encodedPayload = payload_value.getBytes("UTF-8");
                         MqttMessage message1 = new MqttMessage(encodedPayload);
-                        client.publish("LED2", message1);
+                        client.publish("colourled", message1);
 
 
                     } catch (UnsupportedEncodingException | MqttException e) {

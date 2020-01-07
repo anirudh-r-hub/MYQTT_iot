@@ -100,11 +100,11 @@
         app:srcCompat="@drawable/ic_mic_black_24dp" />
 
     <Button
-        android:id="@+id/Color_picker"
+        android:id="@+id/FanSpeedPicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00BCD4"
-        android:text="Color Picker"
+        android:text="FanSpeedPicker"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
