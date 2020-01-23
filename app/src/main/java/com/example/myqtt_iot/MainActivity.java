@@ -22,7 +22,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -83,14 +85,14 @@ public class MainActivity extends AppCompatActivity {
         //#####################################################
         FanSpeedPicker=(Button) findViewById(R.id.FanSpeedPicker);
 
-        FanSpeedPicker.setBackgroundColor(Color.BLUE);
-        FanSpeedPicker.setOnClickListener(new View.OnClickListener() {
+       FanSpeedPicker.setBackgroundColor(Color.BLUE);
+       /* FanSpeedPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MainActivity.this,Main3Activity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         //#######################################################################################
         initialise_text_to_speech();
@@ -99,34 +101,10 @@ public class MainActivity extends AppCompatActivity {
         //#######################################################################################
 
         String clientId = MqttClient.generateClientId();
-        final MqttAndroidClient client =
-                new MqttAndroidClient(MainActivity.this , "tcp://192.168.0.102:1883",
-                        clientId);
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-        options.setUserName("pi");
-        options.setPassword("mike".toCharArray());
+        final MqttAndroidClient client=getConnectionRB(clientId);;
+
         //###########################################################################################
-
-        try {
-            IMqttToken token = client.connect(options);
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Toast.makeText(getApplicationContext(),"inside onSuccess",Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Toast.makeText(getApplicationContext(),"inside onFailure",Toast.LENGTH_LONG).show();
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(),""+e,Toast.LENGTH_LONG).show();
-
-        }
-        //######################################################################
+        //###########################################################################################
 
                 LED1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         });
    //################################################################################################
         //subscribe and callback code
-       /* button_subscribe.setOnClickListener(new View.OnClickListener() {
+       FanSpeedPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String topic = "abc";
@@ -288,9 +266,50 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }*/
+
 
 }
+
+    //######################################################################################################################
+
+    public MqttAndroidClient getConnectionRB(String clientId)  {
+        try {
+            /*MqttAndroidClient client =
+                    new MqttAndroidClient(MainActivity.this, "tcp://192.168.1.104:1883",
+                            clientId);
+
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+            options.setUserName("pi");
+            options.setPassword("mike".toCharArray());
+            IMqttToken token = client.connect(options);
+            /*if(!token.isComplete()) {
+                Toast.makeText(this, "cannot connect to raspberry pi", Toast.LENGTH_LONG).show();*/
+
+                MqttAndroidClient client1 =
+                        new MqttAndroidClient(MainActivity.this, "tcp://tailor.cloudmqtt.com:13968",
+                                clientId);
+
+                MqttConnectOptions options1 = new MqttConnectOptions();
+                options1.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+                options1.setUserName("ghleymma");
+                options1.setPassword("jmvoCCetDGiy".toCharArray());
+               IMqttToken token1 = client1.connect(options1);
+                Toast.makeText(this, "Connected to CloudMQTT", Toast.LENGTH_LONG).show();
+
+                //return client1;
+
+           // }*/
+            return client1;
+        }
+        catch(MqttException  e)
+        {
+
+        }
+
+        return null;
+    }
+
 
     //#######################################################################################################################
     private void initialise_text_to_speech()
